@@ -21,8 +21,8 @@ root.render(
     <Provider store={store}>
       <Router>
         <Routes>
-          <Route path="/" element={<App />}>
-            <Route path='/mergespedxml' element={<MergeSpedXml />} />
+          <Route path="/ecs/" element={<App />}>
+            <Route path='/ecs/mergespedxml' element={<MergeSpedXml />} />
           </Route>
         </Routes>
       </Router>
@@ -33,7 +33,7 @@ root.render(
 function logger({ getState }) {
   return next => action => {
     console.log('will dispatch', action);
-    const returnValue = next(action);
+    const returnValue = next(action); 
     console.log('state after dispatch', getState())
     return returnValue
   }
