@@ -15,8 +15,12 @@ export default function generateFile(dados) {
 function gni(d) {
     var text = ''
     for (let a = 0; a < d.length; a++) {
+        if (d[a].chave === '51220633009911002697550200007510931634900970') {
+            console.log(d[a]);
+        }
         var cfops = [...new Set(d[a].total.reduce((previousValue, currentValue) => { return [...previousValue, currentValue.cfop]; }, ''))].sort((a, b) => b - a);
         for (let b = 0; b < cfops.length; b++) {
+
             // eslint-disable-next-line no-loop-func
             var cfopimpostos = d[a].total.filter((f) => f.cfop === cfops[b]);
             var { vl } = cfopimpostos.reduce((p, c) => { p.vl = p.vl + c.vl; return p; }, { vl: 0 });
@@ -24,11 +28,13 @@ function gni(d) {
             var especie = d[a].serie !== '890' ? '36' : '105';
             var vl_frete = (d[a].vl_frete > 0 ? d[a].vl_frete * vlper : 0);
             var vl_seguro = (d[a].vl_seguro > 0 ? d[a].vl_seguro * vlper : 0);
+            var vl_icms_st = (cfops[0] === '1403' ? d[a].vl_icms_st : 0)
             var vl_outras = (d[a].vl_outras > 0 ? d[a].vl_outras * vlper : 0);
+            var vl_ipi = (d[a].vl_ipi > 0 ? d[a].vl_ipi * vlper : 0);
             // eslint-disable-next-line no-loop-func
             var itens = d[a].item.filter((i) => i.cfop === cfops[b]);
             var vl_produto = itens.reduce((p, c) => { p = p + c.vl_item; return p; }, 0)
-            text = text + grnf('1000', 94, { '2': especie, '3': d[a].fornecedor.doc, '5': slac(cfops[b], d[a].fornecedor.doc), '6': cfops[b], '7': (cfops.length > 1 ? b + 1 : 0).toString(), '8': d[a].numero, '9': d[a].serie, '11': d[a].data_entrada, '12': d[a].data_emissao, '13': ftss2(vl), '16': 'C', '17': 'T', '26': ftss2(vl_frete), '27': ftss2(vl_seguro), '28': ftss2(vl_outras), '39': ftss2(vl_produto), '44': d[a].fornecedor.ie, '54': d[a].chave, '57': cfops[b] });
+            text = text + grnf('1000', 94, { '2': especie, '3': d[a].fornecedor.doc, '5': slac(cfops[b], d[a].fornecedor.doc), '6': cfops[b], '7': (cfops.length > 1 ? b + 1 : 0).toString(), '8': d[a].numero, '9': d[a].serie, '11': d[a].data_entrada, '12': d[a].data_emissao, '13': ftss2(vl), '16': 'C', '17': 'T', '26': ftss2(vl_frete), '27': ftss2(vl_seguro), '28': ftss2(vl_outras), '39': ftss2(vl_produto), '44': d[a].fornecedor.ie, '54': d[a].chave, '57': cfops[b], '90': ftss2(vl_ipi), '91': ftss2(vl_icms_st) });
             for (let c = 0; c < cfopimpostos.length; c++) {
                 text = text + grnf('1020', 15, { '2': '1', '3': ftss2(0), '4': ftss2(cfopimpostos[c].bc_icms), '5': ftss2(cfopimpostos[c].alqt), '6': ftss2(cfopimpostos[c].vl_icms), '9': ftss2(cfopimpostos[c].vl_ipi), '10': ftss2(cfopimpostos[c].vl_icms_st), '11': ftss2(cfopimpostos[c].vl) })
                 if (slac(cfops[b], d[a].fornecedor.doc) === '33') {

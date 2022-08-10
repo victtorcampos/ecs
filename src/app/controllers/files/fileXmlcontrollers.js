@@ -17,6 +17,7 @@ export default async function fileXmlcontrollers(files, data) {
             n.vl_seguro = d.vl_seg;
             n.vl_frete = d.vl_frete;
             n.vl_icms_st = d.vl_st;
+            n.vl_ipi = d.vl_ipi;
             n.vl_desconto = d.vl_desc;
         }
         return n;
