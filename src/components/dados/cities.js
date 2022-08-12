@@ -1,47 +1,11 @@
 export default function cities() {
-    return [{
-        id: "5107925",
-        nome: "Sorriso",
-        estado: {
-            sigla: "MT",
-            nome: "Mato Grosso"
-        }
-    }, {
-        id: "5108402",
-        nome: "Várzea Grande",
-        estado: {
-            sigla: "MT",
-            nome: "Mato Grosso"
-        }
-    }, {
-        id: "4310603",
-        nome: "Itaqui",
-        estado: {
-            sigla: "RS",
-            nome: "Rio Grande do Sul"
-        }
-    }, {
-        id: "4106209",
-        nome: "Curitiba",
-        estado: {
-            sigla: "PR",
-            nome: "Paraná"
-        }
-    }, {
-        id: "3550308",
-        nome: "São Paulo",
-        estado: {
-            sigla: "SP",
-            nome: "São Paulo"
-        }
-    }, {
-        id: "5107909",
-        nome: "Sinop",
-        estado: {
-            sigla: "MT",
-            nome: "Mato Grosso"
-        }
-    }, {
+    return [{ id: "5107925", nome: "Sorriso", estado: { sigla: "MT", nome: "Mato Grosso" } }
+        , { id: "5108402", nome: "Várzea Grande", estado: { sigla: "MT", nome: "Mato Grosso" } }
+        , { id: "4310603", nome: "Itaqui", estado: { sigla: "RS", nome: "Rio Grande do Sul" } }
+        , { id: "4106209", nome: "Curitiba", estado: { sigla: "PR", nome: "Paraná" } }
+        , { id: "3550308", nome: "São Paulo", estado: { sigla: "SP", nome: "São Paulo" } }
+        , { id: "5107909", nome: "Sinop", estado: { sigla: "MT", nome: "Mato Grosso" } }
+        , {
         id: "5107602",
         nome: "Rondonópolis",
         estado: {

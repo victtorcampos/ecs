@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-
+import { useDispatch } from 'react-redux';
+import { addAcumulador } from '..';
 import fileSpedcontrollers from '../app/controllers/files/fileSpedcontrollers';
 import fileXmlcontrollers from '../app/controllers/files/fileXmlcontrollers';
 import generateFile from '../app/controllers/files/generateFile';
@@ -7,14 +8,14 @@ import AccordionNF from './AccordionNF';
 
 export default function MergeSpedXml(props) {
     const [data, setData] = useState(null);
+    const [acumulador, setAcumulador] = useState(null);
     const [fileSpedInputDisabled, setFileSpedInputDisabled] = useState(false);
     const [fileXMlInputDisabled, setFileXMlInputDisabled] = useState(true);
     const [buttonDisabled, setbuttonDisabled] = useState(true);
-
+    const dispatch = useDispatch();
     const refInputSped = useRef();
     const refInputXmls = useRef();
-
-    useEffect(() => { if (data) { console.log('useEffect', data); } }, [data, fileSpedInputDisabled, fileXMlInputDisabled, buttonDisabled])
+    useEffect(() => { }, [data, fileSpedInputDisabled, fileXMlInputDisabled, buttonDisabled, acumulador])
 
     function HandlerSubmit(e) {
         e.preventDefault()
@@ -30,9 +31,10 @@ export default function MergeSpedXml(props) {
         setFileSpedInputDisabled(true);
         fileSpedcontrollers(refInputSped.current.files[0]).then(r => { setData(r); setFileXMlInputDisabled(false); });
     }
+
     function changeInputFileXmls(e) {
         e.preventDefault();
-        fileXmlcontrollers(refInputXmls.current.files, data).then(r => { setData(r); setFileXMlInputDisabled(true); setbuttonDisabled(false); });
+        fileXmlcontrollers(refInputXmls.current.files, data).then(r => { setData(r); setFileXMlInputDisabled(true); });
     }
 
     function changeGerarTxtChave(e) {
@@ -44,6 +46,29 @@ export default function MergeSpedXml(props) {
         element.setAttribute('download', 'chavesnfe.txt');
         document.body.appendChild(element);
         element.click();
+    }
+
+    function changeInputCfop(e) {
+        e.preventDefault();
+        var cfop = e.target.name.split('-')[0];
+        var documento = e.target.name.split('-')[1];
+        // eslint-disable-next-line array-callback-return
+        var prevetAcumulador = data.acumulador.filter((d) => { if (d.cfop === cfop && d.doc === documento) { return; } else { return d; } });
+        var acum = data.acumulador.find((d) => d.cfop === cfop && d.doc === documento);
+        acum.acumulador = e.target.value;
+        setAcumulador([...prevetAcumulador, acum]);
+    }
+
+    function gravaAcumulador(e) {
+        e.preventDefault();
+        if (data.acumulador.filter((v) => v.acumulador === undefined).length > 0) {
+            return;
+        } else {
+            dispatch(addAcumulador(data.acumulador));
+            setbuttonDisabled(false);
+            setFileXMlInputDisabled(true);
+        }
+
     }
 
     return (<div>
@@ -67,6 +92,28 @@ export default function MergeSpedXml(props) {
         <div className='container'>
             {data !== null ?
                 <>
+                    <div className="container text-center">
+                        <div className="row row-cols-6">
+                            <div className="col-12">
+                                <b>CFOP - ACUMULADOR</b>
+                            </div>
+                            {data.acumulador.map((d, i) => {
+                                return (
+                                    <div key={i} className="col">
+                                        <div className="row">
+                                            <label htmlFor={`AC-${d.cfop}-${d.doc}`} className="col-sm col-form-label">{`${d.cfop}-${d.doc}`}</label>
+                                            <div className="col-sm">
+                                                <input type={'text'} maxLength={3} min={0} name={`${d.cfop}-${d.doc}`} className="form-control" onChange={changeInputCfop} id={`AC-${d.cfop}-${d.doc}`} value={undefined} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                            <div className="col-12">
+                                <button type="button" className="btn btn-primary" onClick={gravaAcumulador}>Gravar Acumulador</button>
+                            </div>
+                        </div>
+                    </div>
                     <div className="accordion accordion-flush" id="accordionFlushExample">
                         {data.nfe.map((n, i) => <AccordionNF key={i} notafiscal={n} />)}
                     </div>

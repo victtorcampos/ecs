@@ -1,3 +1,4 @@
+import { store } from "../../..";
 import { ftss2 } from "../../../util/functionUtil";
 
 export default function generateFile(dados) {
@@ -64,17 +65,21 @@ function grnf(reg, qtreg, data) {
 };
 
 function slac(cfop, doc) {
-    if (cfop === '1556' || cfop === '2556') { return '10'; }
-    else if (cfop === '1403' || cfop === '2403') { if (doc.toString().length === 11) { return '33'; } return '4'; }
-    else if (cfop === '1102' || cfop === '2102') { if (doc.toString().length === 11) { return '33'; } return '4'; }
-    else if (cfop === '1117' || cfop === '2117') { return '48'; }
-    else if (cfop === '1407' || cfop === '2407') { return '10'; }
-    else if (cfop === '1551' || cfop === '2551') { return '31'; }
-    else if (cfop === '1653' || cfop === '2653') { return '24'; }
-    else if (cfop === '1910' || cfop === '2910') { return '26'; }
-    else if (cfop === '1922' || cfop === '2922') { return '49'; }
-    else if (cfop === '1949' || cfop === '2949') { return '27'; }
-    return `SEMACUMULADOR-${cfop}`
+
+    const acumulador = store.getState().dados.acumulador;
+    var documento = doc.toString().length === 11 ? "CPF" : 'CNPJ';
+    return acumulador.find((a) => a.cfop === cfop && a.doc === documento).acumulador;
+    // if (cfop === '1556' || cfop === '2556') { return '10'; }
+    // else if (cfop === '1403' || cfop === '2403') { if (doc.toString().length === 11) { return '33'; } return '4'; }
+    // else if (cfop === '1102' || cfop === '2102') { if (doc.toString().length === 11) { return '33'; } return '4'; }
+    // else if (cfop === '1117' || cfop === '2117') { return '48'; }
+    // else if (cfop === '1407' || cfop === '2407') { return '10'; }
+    // else if (cfop === '1551' || cfop === '2551') { return '31'; }
+    // else if (cfop === '1653' || cfop === '2653') { return '24'; }
+    // else if (cfop === '1910' || cfop === '2910') { return '26'; }
+    // else if (cfop === '1922' || cfop === '2922') { return '49'; }
+    // else if (cfop === '1949' || cfop === '2949') { return '27'; }
+    // return `SEMACUMULADOR-${cfop}`
 };
 
 function sie(ie) { if (ie) { return "S"; } else { return "N"; } };
