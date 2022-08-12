@@ -1,8 +1,6 @@
 import { store } from "../../..";
 import { ftss2 } from "../../../util/functionUtil";
 
-const acumulador = store.getState().dados.acumulador;
-
 export default function generateFile(dados) {
     var text = `|00000|${dados.doc}|\n`;
     var fornecedores = dados.fornecedores;
@@ -67,6 +65,8 @@ function grnf(reg, qtreg, data) {
 };
 
 function slac(cfop, doc) {
+
+    const acumulador = store.getState().dados.acumulador;
     var documento = doc.toString().length === 11 ? "CPF" : 'CNPJ';
     return acumulador.find((a) => a.cfop === cfop && a.doc === documento).acumulador;
     // if (cfop === '1556' || cfop === '2556') { return '10'; }

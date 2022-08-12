@@ -13,16 +13,9 @@ export default function MergeSpedXml(props) {
     const [fileXMlInputDisabled, setFileXMlInputDisabled] = useState(true);
     const [buttonDisabled, setbuttonDisabled] = useState(true);
     const dispatch = useDispatch();
-
     const refInputSped = useRef();
     const refInputXmls = useRef();
-
-    useEffect(() => {
-        if (data) {
-            //console.log('useEffect', data);
-
-        }
-    }, [data, fileSpedInputDisabled, fileXMlInputDisabled, buttonDisabled, acumulador])
+    useEffect(() => { }, [data, fileSpedInputDisabled, fileXMlInputDisabled, buttonDisabled, acumulador])
 
     function HandlerSubmit(e) {
         e.preventDefault()
@@ -57,16 +50,25 @@ export default function MergeSpedXml(props) {
 
     function changeInputCfop(e) {
         e.preventDefault();
-        var acum = data.acumulador.find((d) => d.cfop === e.target.name.split('-')[0] && d.doc === e.target.name.split('-')[1]);
-        var acum1 = data.acumulador;
+        var cfop = e.target.name.split('-')[0];
+        var documento = e.target.name.split('-')[1];
+        // eslint-disable-next-line array-callback-return
+        var prevetAcumulador = data.acumulador.filter((d) => { if (d.cfop === cfop && d.doc === documento) { return; } else { return d; } });
+        var acum = data.acumulador.find((d) => d.cfop === cfop && d.doc === documento);
         acum.acumulador = e.target.value;
-        setAcumulador(acum1);
+        setAcumulador([...prevetAcumulador, acum]);
     }
 
     function gravaAcumulador(e) {
         e.preventDefault();
-        dispatch(addAcumulador(acumulador));
-        setbuttonDisabled(false);
+        if (data.acumulador.filter((v) => v.acumulador === undefined).length > 0) {
+            return;
+        } else {
+            dispatch(addAcumulador(data.acumulador));
+            setbuttonDisabled(false);
+            setFileXMlInputDisabled(true);
+        }
+
     }
 
     return (<div>
@@ -92,6 +94,9 @@ export default function MergeSpedXml(props) {
                 <>
                     <div className="container text-center">
                         <div className="row row-cols-6">
+                            <div className="col-12">
+                                <b>CFOP - ACUMULADOR</b>
+                            </div>
                             {data.acumulador.map((d, i) => {
                                 return (
                                     <div key={i} className="col">
