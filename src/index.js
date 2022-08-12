@@ -12,8 +12,16 @@ import cities from './components/dados/cities';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
-const counterSlice = createSlice({ name: 'dados', initialState: { empresa: null, payment: paymentDetail(), cidades: cities() }, reducers: { addCidade: (state, action) => { state.cidades = [...state.cidades, action.payload] } } });
-export const { addCidade } = counterSlice.actions;
+const counterSlice = createSlice({
+  name: 'dados', initialState: { acumulador: null, empresa: null, payment: paymentDetail(), cidades: cities() }, reducers: {
+    addCidade: (state, action) => { state.cidades = [...state.cidades, action.payload] }
+    , addAcumulador: (state, action) => {
+      state.acumulador = null;
+      state.acumulador = action.payload
+    }
+  }
+});
+export const { addCidade, addAcumulador } = counterSlice.actions;
 export const store = configureStore({ reducer: { dados: counterSlice.reducer }, middleware: [logger] });
 
 root.render(
@@ -33,7 +41,7 @@ root.render(
 function logger({ getState }) {
   return next => action => {
     console.log('will dispatch', action);
-    const returnValue = next(action); 
+    const returnValue = next(action);
     console.log('state after dispatch', getState())
     return returnValue
   }

@@ -1,17 +1,14 @@
 import { addCidade, store } from "../../..";
 import { stf } from "../../../util/functionUtil";
 
-export default async function fileSpedcontrollers(file) {
-    if (file.type === 'text/plain') {
-        return await fileReader(file);
-    }
-};
+export default async function fileSpedcontrollers(file) { if (file.type === 'text/plain') { return await fileReader(file); } };
 
 async function fileReader(file) {
     var cadastro = {};
     var fornecedores = [];
     var produtos = [];
     var nfe = [];
+    var ca = [];
     var result = await new Promise((resolve) => {
         var fileReader = new FileReader();
         fileReader.onload = async () => {
@@ -26,7 +23,18 @@ async function fileReader(file) {
                     nfe = [...nfe, regC100(linha, a, fornecedores.find(f => f.cod === campo[4]), produtos)]
                 }
             }
-            cadastro = { ...cadastro, fornecedores, produtos, nfe }
+            cadastro = { ...cadastro, fornecedores, produtos, nfe };
+
+            for (let b = 0; b < cadastro.nfe.length; b++) {
+                for (let c = 0; c < cadastro.nfe[b].total.length; c++) {
+                    // eslint-disable-next-line
+                    var cfop_ = ca.filter((a) => a.cfop === cadastro.nfe[b].total[c].cfop && a.doc === (cadastro.nfe[b].fornecedor.doc.toString().length === 11 ? 'CPF' : 'CNPJ'));
+                    if (cfop_.length === 0) { ca = [...ca, { cfop: cadastro.nfe[b].total[c].cfop, acumulador: undefined, doc: (cadastro.nfe[b].fornecedor.doc.toString().length === 11 ? 'CPF' : 'CNPJ') }] };
+                }
+            }
+
+            cadastro = { ...cadastro, acumulador: ca };
+
             resolve(cadastro);
         }
         fileReader.readAsText(file, 'ISO-8859-1');

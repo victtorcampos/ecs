@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-
+import { useDispatch } from 'react-redux';
+import { addAcumulador } from '..';
 import fileSpedcontrollers from '../app/controllers/files/fileSpedcontrollers';
 import fileXmlcontrollers from '../app/controllers/files/fileXmlcontrollers';
 import generateFile from '../app/controllers/files/generateFile';
@@ -7,14 +8,21 @@ import AccordionNF from './AccordionNF';
 
 export default function MergeSpedXml(props) {
     const [data, setData] = useState(null);
+    const [acumulador, setAcumulador] = useState(null);
     const [fileSpedInputDisabled, setFileSpedInputDisabled] = useState(false);
     const [fileXMlInputDisabled, setFileXMlInputDisabled] = useState(true);
     const [buttonDisabled, setbuttonDisabled] = useState(true);
+    const dispatch = useDispatch();
 
     const refInputSped = useRef();
     const refInputXmls = useRef();
 
-    useEffect(() => { if (data) { console.log('useEffect', data); } }, [data, fileSpedInputDisabled, fileXMlInputDisabled, buttonDisabled])
+    useEffect(() => {
+        if (data) {
+            //console.log('useEffect', data);
+
+        }
+    }, [data, fileSpedInputDisabled, fileXMlInputDisabled, buttonDisabled, acumulador])
 
     function HandlerSubmit(e) {
         e.preventDefault()
@@ -30,9 +38,10 @@ export default function MergeSpedXml(props) {
         setFileSpedInputDisabled(true);
         fileSpedcontrollers(refInputSped.current.files[0]).then(r => { setData(r); setFileXMlInputDisabled(false); });
     }
+
     function changeInputFileXmls(e) {
         e.preventDefault();
-        fileXmlcontrollers(refInputXmls.current.files, data).then(r => { setData(r); setFileXMlInputDisabled(true); setbuttonDisabled(false); });
+        fileXmlcontrollers(refInputXmls.current.files, data).then(r => { setData(r); setFileXMlInputDisabled(true); });
     }
 
     function changeGerarTxtChave(e) {
@@ -44,6 +53,20 @@ export default function MergeSpedXml(props) {
         element.setAttribute('download', 'chavesnfe.txt');
         document.body.appendChild(element);
         element.click();
+    }
+
+    function changeInputCfop(e) {
+        e.preventDefault();
+        var acum = data.acumulador.find((d) => d.cfop === e.target.name.split('-')[0] && d.doc === e.target.name.split('-')[1]);
+        var acum1 = data.acumulador;
+        acum.acumulador = e.target.value;
+        setAcumulador(acum1);
+    }
+
+    function gravaAcumulador(e) {
+        e.preventDefault();
+        dispatch(addAcumulador(acumulador));
+        setbuttonDisabled(false);
     }
 
     return (<div>
@@ -67,6 +90,25 @@ export default function MergeSpedXml(props) {
         <div className='container'>
             {data !== null ?
                 <>
+                    <div className="container text-center">
+                        <div className="row row-cols-6">
+                            {data.acumulador.map((d, i) => {
+                                return (
+                                    <div key={i} className="col">
+                                        <div className="row">
+                                            <label htmlFor={`AC-${d.cfop}-${d.doc}`} className="col-sm col-form-label">{`${d.cfop}-${d.doc}`}</label>
+                                            <div className="col-sm">
+                                                <input type={'text'} maxLength={3} min={0} name={`${d.cfop}-${d.doc}`} className="form-control" onChange={changeInputCfop} id={`AC-${d.cfop}-${d.doc}`} value={undefined} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                            <div className="col-12">
+                                <button type="button" className="btn btn-primary" onClick={gravaAcumulador}>Gravar Acumulador</button>
+                            </div>
+                        </div>
+                    </div>
                     <div className="accordion accordion-flush" id="accordionFlushExample">
                         {data.nfe.map((n, i) => <AccordionNF key={i} notafiscal={n} />)}
                     </div>
